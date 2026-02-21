@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resell & Profit Calculator</title>
+
+<style>
+:root {
+    --bg: #121212;
+    --panel: #1e1e1e;
+    --border: #333333;
+    --input-bg: #252525;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #2563eb;
+    --profit: #4ade80;
+    --loss: #f87171;
+}
+
+.light {
+    --bg: #f4f4f7;
+    --panel: #ffffff;
+    --border: #e2e8f0;
+    --input-bg: #ffffff;
+    --text: #1a1a1b;
+    --muted: #64748b;
+    --profit: #16a34a;
+    --loss: #dc2626;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px;
+    transition: background 0.3s ease;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.panel {
+    width: 360px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus {
+    border-color: var(--accent);
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--accent);
+}
+
+.result-display {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--text);
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.stat-card {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 4px;
+    text-align: center;
+}
+
+.stat-card span {
+    font-size: 10px;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.stat-card strong {
+    font-size: 13px;
+    color: var(--text);
+}
+
+.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* Floating Buttons */
+.theme-toggle, .github-link {
+    position: fixed;
+    bottom: 24px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 100;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.theme-toggle { right: 24px; font-size: 20px; }
+.github-link { left: 24px; text-decoration: none; }
+
+.theme-toggle:active, .github-link:active {
+    transform: scale(0.9);
+}
+
+.github-link svg {
+    fill: var(--text);
+    width: 26px;
+    height: 26px;
+}
+</style>
+</head>
+<body>
+
+<a href="https://www.github.com/KrychaTech/vinted-resell" target="_blank" class="github-link" title="View on GitHub">
+    <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.412-4.041-1.412-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+</a>
+
+<div class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌓</div>
+
+<div class="container">
+
+    <div class="panel">
+        <h2>Resell Calculator</h2>
+        <div class="input-group">
+            <label>Original Price</label>
+            <input type="number" id="originalPrice" placeholder="0.00" oninput="calculateResell()">
+        </div>
+        <div class="input-group">
+            <label>Percentage to subtract (%)</label>
+            <input type="number" id="percentage" value="10" oninput="calculateResell()">
+        </div>
+        <div class="input-group">
+            <label>Round to nearest</label>
+            <input type="number" id="rounding" value="10" oninput="calculateResell()">
+        </div>
+        <div class="result-display" id="resellResult">—</div>
+    </div>
+
+    <div class="panel">
+        <h2>Profit Calculator</h2>
+        <div class="input-group">
+            <label>Resell Price</label>
+            <input type="number" id="resellPrice" placeholder="0.00" oninput="calculateProfit()">
+        </div>
+        <div class="input-group">
+            <label>Purchase Price</label>
+            <input type="number" id="purchasePrice" placeholder="0.00" oninput="calculateProfit()">
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <div class="input-group" style="flex: 1;">
+                <label>Logistics</label>
+                <input type="number" id="logistics" value="0" oninput="calculateProfit()">
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <div class="label-row">
+                    <label>Additional</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="toggleAdditional" checked onchange="toggleAdditionalField()">
+                        On
+                    </label>
+                </div>
+                <input type="number" id="additionalCosts" value="0" oninput="calculateProfit()">
+            </div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>Fees Paid</span>
+                <strong id="feesResult">$0.00</strong>
+            </div>
+            <div class="stat-card">
+                <span>Profit</span>
+                <strong id="profitResult">$0.00</strong>
+            </div>
+            <div class="stat-card">
+                <span>ROI</span>
+                <strong id="roiResult">0%</strong>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Key for LocalStorage
+const STORAGE_KEY = 'vinted_resell_data';
+
+function formatCurrency(val) {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+}
+
+function saveData() {
+    const data = {
+        originalPrice: document.getElementById("originalPrice").value,
+        percentage: document.getElementById("percentage").value,
+        rounding: document.getElementById("rounding").value,
+        resellPrice: document.getElementById("resellPrice").value,
+        purchasePrice: document.getElementById("purchasePrice").value,
+        logistics: document.getElementById("logistics").value,
+        additionalCosts: document.getElementById("additionalCosts").value,
+        additionalEnabled: document.getElementById("toggleAdditional").checked,
+        theme: document.body.classList.contains("light") ? "light" : "dark"
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function loadData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    
+    const data = JSON.parse(saved);
+    
+    document.getElementById("originalPrice").value = data.originalPrice || "";
+    document.getElementById("percentage").value = data.percentage || "10";
+    document.getElementById("rounding").value = data.rounding || "10";
+    document.getElementById("resellPrice").value = data.resellPrice || "";
+    document.getElementById("purchasePrice").value = data.purchasePrice || "";
+    document.getElementById("logistics").value = data.logistics || "0";
+    document.getElementById("additionalCosts").value = data.additionalCosts || "0";
+    document.getElementById("toggleAdditional").checked = data.additionalEnabled ?? true;
+
+    if (data.theme === "light") {
+        document.body.classList.add("light");
+        document.getElementById("themeToggle").innerText = "🌙";
+    }
+
+    toggleAdditionalField(); // Ensure UI matches checkbox state
+    calculateResell(); // Run initial calc
+}
+
+function calculateResell() {
+    const original = parseFloat(document.getElementById("originalPrice").value);
+    const percentage = parseFloat(document.getElementById("percentage").value);
+    const rounding = parseFloat(document.getElementById("rounding").value);
+    
+    if (isNaN(original)) {
+        document.getElementById("resellResult").innerText = "—";
+        calculateProfit(); 
+        saveData();
+        return;
+    }
+
+    const discounted = original - (original * (percentage / 100));
+    const rounded = Math.round(discounted / (rounding || 1)) * (rounding || 1);
+
+    document.getElementById("resellResult").innerText = formatCurrency(rounded);
+    document.getElementById("resellPrice").value = rounded.toFixed(2);
+    
+    calculateProfit();
+    saveData();
+}
+
+function calculateProfit() {
+    const resell = parseFloat(document.getElementById("resellPrice").value) || 0;
+    const purchase = parseFloat(document.getElementById("purchasePrice").value) || 0;
+    const logistics = parseFloat(document.getElementById("logistics").value) || 0;
+    const addEnabled = document.getElementById("toggleAdditional").checked;
+    const additional = addEnabled ? (parseFloat(document.getElementById("additionalCosts").value) || 0) : 0;
+
+    const fees = (purchase * 0.05) + 2.90;
+    const profit = resell - purchase - fees - logistics - additional;
+    const roi = purchase > 0 ? (profit / purchase) * 100 : 0;
+
+    document.getElementById("feesResult").innerText = formatCurrency(fees);
+    document.getElementById("profitResult").innerText = formatCurrency(profit);
+    document.getElementById("roiResult").innerText = roi.toFixed(1) + "%";
+
+    document.getElementById("profitResult").style.color = profit >= 0 ? "var(--profit)" : "var(--loss)";
+    document.getElementById("roiResult").style.color = roi >= 0 ? "var(--profit)" : "var(--loss)";
+    
+    saveData();
+}
+
+function toggleAdditionalField() {
+    const field = document.getElementById("additionalCosts");
+    field.classList.toggle("disabled", !document.getElementById("toggleAdditional").checked);
+    calculateProfit();
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("light");
+    const isLight = document.body.classList.contains("light");
+    document.getElementById("themeToggle").innerText = isLight ? "🌙" : "☀️";
+    saveData();
+}
+
+// Initial Load
+window.onload = loadData;
+</script>
+
+</body>
+</html>
